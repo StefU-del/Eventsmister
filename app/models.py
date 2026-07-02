@@ -61,4 +61,3 @@ class Like(Base):
     parentPost = relationship("Posts", back_populates="likes")
 
 
-
