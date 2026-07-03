@@ -1,6 +1,6 @@
 from app.database import SessionLocal
 
-def get_database():
+def get_db():
     db = SessionLocal()
 
     try:
