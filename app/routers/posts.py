@@ -14,6 +14,8 @@ def get_posts(db: Session = Depends(get_db)):
         models.Post.created_at.desc()
     ).all()
 
+    return posts
+
 @router.post("/", response_model=schemas.PostResponse)
 def create_post(
     post: schemas.PostCreate,

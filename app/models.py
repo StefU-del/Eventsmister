@@ -26,7 +26,7 @@ class Post(Base):
     id = Column(Integer, primary_key=True, index=True, unique=True, nullable=False)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     title = Column(String(100), nullable=False)
-    desciption = Column(Text, nullable=False)
+    description = Column(Text, nullable=False)
     category = Column(String(50), nullable=False)
     location = Column(String(100), nullable=False)
     event_date = Column(DateTime(timezone=True), nullable=False)
