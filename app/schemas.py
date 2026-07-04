@@ -23,3 +23,24 @@ class UserResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class PostCreate(BaseModel):
+    title: str
+    description: str
+    category: str
+    location: str
+    event_date: datetime
+
+class PostResponse(BaseModel):
+    id: int
+    owner_id: int
+    title: str
+    description: str
+    category: str
+    location: str
+    event_date: datetime
+    created_at: datetime
+
+    class Config:
+
+        from_attributes = True
