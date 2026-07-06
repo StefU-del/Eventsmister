@@ -84,7 +84,25 @@ def create_post(auth_headers):
     return _create_post
 
 
+@pytest.fixture
+def create_comment(auth_headers):
+    def _create_comment(
+        post_id: int,
+        content: str = "This is a test comment.",
+        headers: dict | None = None,
+    ):
+        response = client.post(
+            f"/posts/{post_id}/comments",
+            headers=headers or auth_headers,
+            json={
+                "content": content,
+            },
+        )
+
+        assert response.status_code == 200
+        return response.json()
     
+    return _create_comment
     
 
 
