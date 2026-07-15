@@ -1,3 +1,7 @@
+import os
+
+os.environ.setdefault("SECRET_KEY", "test-secret-key")
+
 from sqlalchemy import create_engine;
 from sqlalchemy.orm import sessionmaker;
 from app.database import Base;
@@ -32,7 +36,6 @@ Base.metadata.create_all(bind=engine);
 app.dependency_overrides[get_db] = test_db;
 
 client = TestClient(app);
-
 
 
 

@@ -1,10 +1,17 @@
+import os
 from datetime import datetime, timedelta, timezone
 
+from dotenv import load_dotenv
 from jose import jwt
 from passlib.context import CryptContext
 
-SECRET_KEY="Secret1234"
-ALGORITHM="HS256"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY must be set in the environment.")
+
+ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 password_context = CryptContext(
@@ -36,4 +43,3 @@ def create_access_token(data: dict) -> str:
     )
 
     return encoded_jwt
-

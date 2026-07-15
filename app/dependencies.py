@@ -14,7 +14,7 @@ def get_db():
     try:
         yield db
     finally:
-        db.close_all
+        db.close()
 
 def get_current_user(
         # get Bearer from Authorization header
@@ -55,4 +55,3 @@ def get_current_user(
 
 
     
-
