@@ -1,11 +1,13 @@
 # Eventsmister
 
-Eventsmister is a FastAPI backend for a social media-style event discovery app
-focused on London events. Users can register, log in, create and browse event
-posts, comment on posts, like posts or comments, search for users, and view a
-user's posts.
+Eventsmister is a full-stack event discovery app focused on London. The project
+is organised as a monorepo with a FastAPI backend and a React frontend. Users
+can register, log in, create and browse event posts, comment on posts, like
+posts or comments, search for users, and view a user's posts.
 
 ## Tech Stack
+
+### Backend
 
 - Python
 - FastAPI
@@ -16,36 +18,42 @@ user's posts.
 - python-jose for JWT access tokens
 - Pytest
 
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- CSS Modules
+- Lucide React
+
 ## Project Structure
 
 ```text
-app/
-  auth.py              Password hashing and JWT creation
-  database.py          SQLite database connection and SQLAlchemy setup
-  dependencies.py      Database and authentication dependencies
-  main.py              FastAPI app setup and router registration
-  models.py            SQLAlchemy models for users, posts, comments, and likes
-  schemas.py           Pydantic request and response schemas
-  routers/
-    auth.py            Register and login routes
-    comments.py        Comment creation, listing, and deletion routes
-    likes.py           Post and comment like/unlike routes
-    posts.py           Event post routes
-    users.py           User lookup, search, and user post routes
+backend/
+  app/
+    auth.py              Password hashing and JWT creation
+    database.py          SQLite database connection and SQLAlchemy setup
+    dependencies.py      Database and authentication dependencies
+    main.py              FastAPI app setup and router registration
+    models.py            SQLAlchemy models
+    schemas.py           Pydantic request and response schemas
+    routers/             Auth, post, comment, like, and user routes
+  tests/                 Backend API and security tests
+  .env.example           Example backend environment variables
+  eventsmister.db        Local SQLite development database
+  requirements.txt       Python dependencies
 
-tests/
-  conftest.py          Shared pytest fixtures
-  database_setup.py    In-memory test database and FastAPI test client setup
-  test_auth.py         Authentication tests
-  test_commets.py      Comment route tests
-  test_likes.py        Like route tests
-  test_posts.py        Post route tests
-  test_users.py        User route tests
+frontend/
+  src/                   React components, styles, and assets
+  package.json           Frontend dependencies and scripts
+
+.github/workflows/       Continuous integration workflows
+README.md                Project documentation
 ```
 
-## Setup
+## Backend Setup
 
-Create and activate a virtual environment:
+From the repository root, create and activate a virtual environment:
 
 ```bash
 python -m venv .venv
@@ -55,20 +63,27 @@ source .venv/bin/activate
 Install dependencies:
 
 ```bash
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
-Create a `.env` file with a long, random JWT signing key:
+Create `backend/.env` from the example file and replace the placeholder with a
+long, random JWT signing key:
+
+```bash
+cp backend/.env.example backend/.env
+```
 
 ```text
 SECRET_KEY=replace-with-a-long-random-secret
 ```
 
-## Run the App
+## Run the Backend
 
-Start the development server:
+Run FastAPI from the backend directory so the `app` package, `.env`, and SQLite
+database all resolve consistently:
 
 ```bash
+cd backend
 uvicorn app.main:app --reload
 ```
 
@@ -83,6 +98,21 @@ Interactive API docs are available at:
 ```text
 http://127.0.0.1:8000/docs
 ```
+
+## Frontend Setup
+
+In a second terminal, install and run the React application:
+
+```bash
+cd frontend
+nvm use 22
+npm install
+npm run dev
+```
+
+The frontend is available at `http://localhost:5173` by default. The home page
+currently uses local sample events; connecting it to the backend is the next
+integration step.
 
 ## Authentication
 
@@ -207,31 +237,42 @@ cascades to its comments and likes.
 
 ## Run Tests
 
-Run the test suite with:
+Run the backend test suite from its package directory:
 
 ```bash
+cd backend
 pytest
 ```
 
-Or, using the project virtual environment directly:
+Or run it from the repository root using the existing virtual environment:
 
 ```bash
-.venv/bin/python -m pytest
+.venv/bin/python -m pytest backend/tests
 ```
 
 The tests use an in-memory SQLite database configured in
-`tests/database_setup.py`, so they do not need the local `eventsmister.db`
-database file.
+`backend/tests/database_setup.py`, so they do not need the local
+`backend/eventsmister.db` database file.
+
+Check the frontend with:
+
+```bash
+cd frontend
+npm run lint
+npm run build
+```
 
 ## Continuous Integration
 
-GitHub Actions is configured in `.github/workflows/tests.yaml`. It installs the
-Python dependencies and runs `pytest` on pushes to `main` and on pull requests.
+GitHub Actions is configured in `.github/workflows/tests.yaml`. It runs commands
+from `backend/`, installs the Python dependencies, and runs `pytest` on pushes
+to `main` and on pull requests.
 
 ## Development Notes
 
-- `eventsmister.db` is the local SQLite development database.
-- `SECRET_KEY` must be set in `.env` or the environment before starting the app.
+- `backend/eventsmister.db` is the local SQLite development database.
+- `SECRET_KEY` must be set in `backend/.env` or the environment before starting
+  the backend.
 - Database tables are created automatically when `app.main` starts.
 - JWT authentication protects write actions for posts, comments, and likes.
 - API behavior is covered by pytest tests for auth, posts, comments, likes, and
