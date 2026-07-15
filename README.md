@@ -58,6 +58,12 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+Create a `.env` file with a long, random JWT signing key:
+
+```text
+SECRET_KEY=replace-with-a-long-random-secret
+```
+
 ## Run the App
 
 Start the development server:
@@ -225,6 +231,7 @@ Python dependencies and runs `pytest` on pushes to `main` and on pull requests.
 ## Development Notes
 
 - `eventsmister.db` is the local SQLite development database.
+- `SECRET_KEY` must be set in `.env` or the environment before starting the app.
 - Database tables are created automatically when `app.main` starts.
 - JWT authentication protects write actions for posts, comments, and likes.
 - API behavior is covered by pytest tests for auth, posts, comments, likes, and
