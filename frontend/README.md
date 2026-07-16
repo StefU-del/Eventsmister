@@ -19,6 +19,9 @@ npm run dev      # Start the development server
 npm run build    # Type-check and create a production build
 npm run lint     # Run ESLint
 npm run preview  # Preview the production build
+npm test         # Run the frontend test suite once
+npm run test:watch     # Run tests in watch mode
+npm run test:coverage  # Run tests and create a coverage report
 ```
 
 ## Styling

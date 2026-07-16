@@ -259,15 +259,20 @@ Check the frontend with:
 
 ```bash
 cd frontend
+npm test
 npm run lint
 npm run build
 ```
 
+Generate the frontend coverage report with `npm run test:coverage`. Frontend
+tests use Vitest and React Testing Library with a mocked API boundary, so the
+FastAPI server does not need to be running.
+
 ## Continuous Integration
 
-GitHub Actions is configured in `.github/workflows/tests.yaml`. It runs commands
-from `backend/`, installs the Python dependencies, and runs `pytest` on pushes
-to `main` and on pull requests.
+GitHub Actions is configured in `.github/workflows/tests.yaml`. Separate backend
+and frontend jobs run pytest, ESLint, Vitest, and the production frontend build
+on pushes to `main` and on pull requests.
 
 ## Development Notes
 
