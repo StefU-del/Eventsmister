@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models, schemas
 from app.dependencies import get_db, get_current_user
@@ -32,8 +32,8 @@ def create_comment(
 
     new_comment = models.Comment(
         content=comment.content,
-        post_id=post_id,
-        owner_id=current_user.id,
+        parent_post=post,
+        owner=current_user,
     )
 
     db.add(new_comment)
@@ -61,7 +61,9 @@ def get_comments_for_post(
             detail="Post not found",
         )
 
-    comments = db.query(models.Comment).filter(
+    comments = db.query(models.Comment).options(
+        joinedload(models.Comment.owner)
+    ).filter(
         models.Comment.post_id == post_id
     ).order_by(
         models.Comment.created_at.desc()

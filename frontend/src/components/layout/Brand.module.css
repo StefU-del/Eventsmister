@@ -1,0 +1,53 @@
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-ink);
+  font-size: 1.06rem;
+  font-weight: 800;
+}
+
+.brandMark {
+  display: grid;
+  grid-template-columns: repeat(2, 8px);
+  gap: 2px;
+  align-content: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #a8c9ba;
+  border-radius: 8px;
+  background: var(--color-mint-soft);
+}
+
+.brandMark span {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px 6px 2px 6px;
+  background: var(--color-mint-strong);
+}
+
+.brandMark span:nth-child(2) {
+  background: var(--color-coral);
+  transform: rotate(90deg);
+}
+
+.brandMark span:nth-child(3) {
+  background: var(--color-sky);
+  transform: rotate(90deg);
+}
+
+.brandMark span:nth-child(4) {
+  background: var(--color-yellow);
+}
+
+@media (max-width: 650px) {
+  .brand {
+    font-size: 0.98rem;
+  }
+
+  .brandMark {
+    width: 31px;
+    height: 31px;
+  }
+}

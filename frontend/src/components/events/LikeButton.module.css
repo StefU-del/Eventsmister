@@ -1,0 +1,56 @@
+.likeControl {
+  position: relative;
+  display: inline-flex;
+}
+
+.likeControl button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 58px;
+  min-height: 38px;
+  padding: 0 11px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.compact button {
+  min-width: 48px;
+  min-height: 34px;
+  padding: 0 8px;
+}
+
+.likeControl button:hover:not(:disabled),
+.likeControl button[aria-pressed='true'] {
+  border-color: #efb3aa;
+  color: var(--color-coral-deep);
+  background: var(--color-coral-soft);
+}
+
+.likeControl button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.error {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 210px;
+  padding: 8px 10px;
+  border: 1px solid #e6b2aa;
+  border-radius: 6px;
+  color: #7d3026;
+  background: #fff8f6;
+  font-size: 0.7rem;
+  line-height: 1.35;
+  box-shadow: 0 8px 20px rgba(50, 32, 27, 0.12);
+}

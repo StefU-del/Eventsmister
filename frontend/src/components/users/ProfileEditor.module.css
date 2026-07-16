@@ -1,0 +1,108 @@
+.editor {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.editor > label,
+.fieldGrid > label {
+  display: grid;
+  gap: 7px;
+  color: var(--color-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.editor > label input,
+.fieldGrid > label input {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 11px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 7px;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  font: inherit;
+}
+
+.editor > label small,
+.fieldGrid > label small {
+  color: var(--color-muted);
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  gap: 9px;
+}
+
+.actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 7px;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.actions .saveButton {
+  border-color: var(--color-mint-deep);
+  color: white;
+  background: var(--color-mint-deep);
+}
+
+.actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-coral-deep);
+  font-size: 0.76rem;
+}
+
+.spinner {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 650px) {
+  .editor {
+    padding: 18px 16px;
+  }
+
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

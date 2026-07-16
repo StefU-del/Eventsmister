@@ -1,0 +1,84 @@
+.commentItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 13px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.commentItem:last-child {
+  border-bottom: 0;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: var(--color-mint-deep);
+  background: var(--color-mint-soft);
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.commentBody {
+  min-width: 0;
+}
+
+.commentBody header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.commentBody header > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.commentBody header a {
+  color: var(--color-ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.commentBody time {
+  color: var(--color-muted);
+  font-size: 0.68rem;
+}
+
+.commentBody > p {
+  margin: 8px 0 12px;
+  overflow-wrap: anywhere;
+  color: var(--color-muted);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.deleteButton {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--color-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.deleteButton:hover:not(:disabled) {
+  color: var(--color-coral-deep);
+  background: var(--color-coral-soft);
+}
+
+.deleteButton:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}

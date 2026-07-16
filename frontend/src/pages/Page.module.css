@@ -1,0 +1,65 @@
+.page {
+  width: min(100% - 40px, 1180px);
+  margin: 0 auto;
+  padding: 52px 0 76px;
+}
+
+.narrowPage {
+  width: min(100% - 40px, 860px);
+  margin: 0 auto;
+  padding: 52px 0 76px;
+}
+
+.primaryLink,
+.secondaryButton,
+.dangerButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primaryLink {
+  border: 0;
+  color: white;
+  background: var(--color-mint-deep);
+}
+
+.secondaryButton {
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-ink);
+  background: var(--color-surface);
+}
+
+.dangerButton {
+  border: 1px solid #e8b4ac;
+  color: var(--color-coral-deep);
+  background: var(--color-coral-soft);
+}
+
+.dangerButton:disabled,
+.secondaryButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.inlineError {
+  margin: 12px 0 0;
+  color: #8e3f35;
+  font-size: 0.76rem;
+}
+
+@media (max-width: 650px) {
+  .page,
+  .narrowPage {
+    width: min(100% - 28px, 1180px);
+    padding: 38px 0 60px;
+  }
+}

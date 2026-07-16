@@ -1,0 +1,55 @@
+.userCard {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: #255d73;
+  background: var(--color-sky-soft);
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.copy {
+  min-width: 0;
+}
+
+.copy h2 {
+  margin: 0;
+  overflow: hidden;
+  color: var(--color-ink);
+  font-size: 0.96rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copy p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 5px 0 0;
+  color: var(--color-muted);
+  font-size: 0.7rem;
+}
+
+.userCard > a {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 7px;
+  color: var(--color-mint-deep);
+  background: var(--color-mint-soft);
+}

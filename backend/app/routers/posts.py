@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
+
 from app import models, schemas
 from app.dependencies import get_db, get_current_user
 
@@ -10,7 +11,9 @@ router = APIRouter(
 
 @router.get("/", response_model=list[schemas.PostResponse])
 def get_posts(db: Session = Depends(get_db)):
-    posts = db.query(models.Post).order_by(
+    posts = db.query(models.Post).options(
+        joinedload(models.Post.owner)
+    ).order_by(
         models.Post.created_at.desc()
     ).all()
 
@@ -28,7 +31,9 @@ def create_post(
         location=post.location,
         event_date=post.event_date,
         category=post.category,
-        owner_id=user.id
+        image_url=post.image_url,
+        hashtags=post.hashtags,
+        owner=user,
     )
 
     db.add(new_post)
@@ -43,7 +48,9 @@ def get_post(
     db: Session = Depends(get_db)
 ):
 
-    post = db.query(models.Post).filter(
+    post = db.query(models.Post).options(
+        joinedload(models.Post.owner)
+    ).filter(
         models.Post.id == post_id
     ).first()
 

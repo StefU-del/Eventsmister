@@ -1,0 +1,113 @@
+.eventForm {
+  display: grid;
+  gap: 20px;
+  max-width: 760px;
+  padding: 28px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.field,
+.fieldGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.fieldGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field label {
+  color: var(--color-ink);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 7px;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  font: inherit;
+}
+
+.field textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.field > span {
+  justify-self: end;
+  color: var(--color-muted);
+  font-size: 0.68rem;
+}
+
+.field small {
+  color: var(--color-muted);
+  font-size: 0.7rem;
+}
+
+.error {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--color-coral-deep);
+  color: #7d3026;
+  background: var(--color-coral-soft);
+  font-size: 0.8rem;
+}
+
+.submitButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 7px;
+  color: white;
+  background: var(--color-mint-deep);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.spinner {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 650px) {
+  .eventForm {
+    padding: 20px 16px;
+  }
+
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

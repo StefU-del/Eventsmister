@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app import models
+from app import models, schemas
 from app.dependencies import get_db, get_current_user
 
 
@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-@router.post("/posts/{post_id}/like")
+@router.post("/posts/{post_id}/like", response_model=schemas.LikeStatusResponse)
 def like_post(
     post_id: int,
     db: Session = Depends(get_db),
@@ -46,10 +46,13 @@ def like_post(
     db.commit()
     db.refresh(new_like)
 
-    return {"message": "Post liked successfully"}
+    return {
+        "message": "Post liked successfully",
+        "like_count": post.like_count,
+    }
 
 
-@router.delete("/posts/{post_id}/like")
+@router.delete("/posts/{post_id}/like", response_model=schemas.LikeStatusResponse)
 def unlike_post(
     post_id: int,
     db: Session = Depends(get_db),
@@ -79,9 +82,13 @@ def unlike_post(
     db.delete(existing_like)
     db.commit()
 
-    return {"message": "Post unliked successfully"}
+    return {
+        "message": "Post unliked successfully",
+        "like_count": post.like_count,
+    }
 
-@router.post("/comments/{comment_id}/like")
+
+@router.post("/comments/{comment_id}/like", response_model=schemas.LikeStatusResponse)
 def like_comment(
     comment_id: int,
     db: Session = Depends(get_db),
@@ -117,10 +124,13 @@ def like_comment(
     db.commit()
     db.refresh(new_like)
 
-    return {"message": "Comment liked successfully"}
+    return {
+        "message": "Comment liked successfully",
+        "like_count": comment.like_count,
+    }
 
 
-@router.delete("/comments/{comment_id}/like")
+@router.delete("/comments/{comment_id}/like", response_model=schemas.LikeStatusResponse)
 def unlike_comment(
     comment_id: int,
     db: Session = Depends(get_db),
@@ -150,4 +160,7 @@ def unlike_comment(
     db.delete(existing_like)
     db.commit()
 
-    return {"message": "Comment unliked successfully"}
+    return {
+        "message": "Comment unliked successfully",
+        "like_count": comment.like_count,
+    }

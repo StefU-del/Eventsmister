@@ -1,0 +1,18 @@
+.hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hashtags a {
+  color: #255d73;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.hashtags a:hover {
+  text-decoration: underline;
+}

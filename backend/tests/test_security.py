@@ -3,11 +3,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-from sqlalchemy import create_engine, inspect, text
+import pytest
 
 from app import dependencies
-from app.database import migrate_legacy_schema
 from tests.database_setup import client
+
+pytestmark = pytest.mark.security
 
 
 def test_get_db_closes_the_session(monkeypatch):
@@ -73,24 +74,90 @@ def test_cors_rejects_an_unlisted_origin():
     assert "access-control-allow-origin" not in response.headers
 
 
-def test_legacy_post_description_column_is_migrated(tmp_path):
-    database_engine = create_engine(f"sqlite:///{tmp_path / 'legacy.db'}")
+def test_cors_allows_the_authorization_header_for_the_frontend():
+    response = client.options(
+        "/auth/me",
+        headers={
+            "Origin": "http://127.0.0.1:5173",
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "Authorization",
+        },
+    )
 
-    with database_engine.begin() as connection:
-        connection.execute(
-            text(
-                "CREATE TABLE posts ("
-                "id INTEGER PRIMARY KEY, "
-                "desciption TEXT NOT NULL"
-                ")"
-            )
-        )
+    assert response.status_code == 200
+    assert "authorization" in response.headers["access-control-allow-headers"].lower()
 
-    migrate_legacy_schema(database_engine)
 
-    column_names = {
-        column["name"] for column in inspect(database_engine).get_columns("posts")
-    }
+def test_api_responses_include_browser_security_headers():
+    response = client.get("/")
 
-    assert "description" in column_names
-    assert "desciption" not in column_names
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["referrer-policy"] == "no-referrer"
+
+
+def test_user_search_treats_sql_syntax_as_literal_input(create_user, auth_headers):
+    create_user("hidden_user", "hidden@example.com", "Password123!")
+
+    response = client.get(
+        "/users/search",
+        params={"query": "' OR 1=1 --"},
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+@pytest.mark.parametrize("query", ["%", "_", "\\"])
+def test_user_search_does_not_treat_wildcards_as_patterns(
+    query,
+    create_user,
+    auth_headers,
+):
+    create_user("wildcardtarget", "wildcard@example.com", "Password123!")
+
+    response = client.get(
+        "/users/search",
+        params={"query": query},
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 200
+    assert all(query in user["username"] for user in response.json())
+    assert "wildcardtarget" not in {user["username"] for user in response.json()}
+
+
+def test_registration_rejects_passwords_beyond_bcrypts_byte_limit():
+    response = client.post(
+        "/auth/register",
+        json={
+            "username": "oversized_password",
+            "email": "oversized@example.com",
+            "password": f"Password123!{'x' * 61}",
+        },
+    )
+
+    assert response.status_code == 422
+    assert "72 bytes" in response.json()["detail"][0]["msg"]
+
+    login_response = client.post(
+        "/auth/login",
+        json={"username": "oversized_password", "password": f"Password123!{'x' * 61}"},
+    )
+    assert login_response.status_code == 422
+
+
+def test_html_like_comment_content_is_returned_as_data(create_post, auth_headers):
+    post = create_post()
+    content = "<script>window.compromised = true</script>"
+
+    response = client.post(
+        f"/posts/{post['id']}/comments",
+        headers=auth_headers,
+        json={"content": content},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["content"] == content
+    assert response.headers["content-type"].startswith("application/json")

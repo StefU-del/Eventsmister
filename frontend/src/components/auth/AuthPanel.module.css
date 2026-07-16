@@ -1,0 +1,126 @@
+.authPage {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 0.65fr);
+  align-items: center;
+  gap: clamp(50px, 9vw, 130px);
+  width: min(100% - 40px, 1040px);
+  min-height: calc(100vh - 170px);
+  margin: 0 auto;
+  padding: 56px 0 72px;
+}
+
+.intro > span {
+  color: var(--color-coral-deep);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  max-width: 530px;
+  margin: 10px 0 14px;
+  color: var(--color-ink);
+  font-size: 3.2rem;
+  line-height: 1.05;
+}
+
+.intro p {
+  max-width: 480px;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.panel {
+  padding: 26px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: 0 18px 45px rgba(31, 65, 55, 0.08);
+}
+
+.panel form {
+  display: grid;
+  gap: 17px;
+}
+
+.panel label {
+  display: grid;
+  gap: 7px;
+  color: var(--color-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.panel input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 7px;
+  color: var(--color-ink);
+  background: white;
+  font: inherit;
+}
+
+.panel small {
+  color: var(--color-muted);
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.panel button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 7px;
+  color: white;
+  background: var(--color-mint-deep);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.panel button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.formError {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--color-coral-deep);
+  color: #7d3026;
+  background: var(--color-coral-soft);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.footer {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-muted);
+  font-size: 0.76rem;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--color-mint-deep);
+  font-weight: 800;
+}
+
+@media (max-width: 780px) {
+  .authPage {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    width: min(100% - 28px, 540px);
+    padding: 42px 0 60px;
+  }
+
+  .intro h1 {
+    font-size: 2.45rem;
+  }
+}

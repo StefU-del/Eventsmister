@@ -1,0 +1,39 @@
+.filters {
+  display: flex;
+  gap: 5px;
+  padding: 4px;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #eef2ef;
+}
+
+.filters button {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 5px;
+  color: var(--color-muted);
+  background: transparent;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.filters button:hover {
+  color: var(--color-ink);
+}
+
+.filters .active {
+  color: var(--color-ink);
+  background: var(--color-surface);
+  box-shadow: 0 1px 4px rgba(27, 49, 43, 0.1);
+}
+
+@media (max-width: 650px) {
+  .filters {
+    width: 100%;
+  }
+}

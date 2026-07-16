@@ -1,0 +1,31 @@
+.recommendations {
+  width: min(100% - 40px, 1180px);
+  margin: 0 auto;
+  padding: 42px 0 10px;
+}
+
+.recommendations header {
+  margin-bottom: 20px;
+}
+
+.recommendations header span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--color-coral-deep);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.recommendations h2 {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 1.65rem;
+}
+
+@media (max-width: 650px) {
+  .recommendations {
+    width: min(100% - 28px, 1180px);
+    padding-top: 32px;
+  }
+}

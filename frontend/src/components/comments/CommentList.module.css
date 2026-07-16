@@ -1,0 +1,11 @@
+.commentList {
+  display: grid;
+}
+
+.empty {
+  margin: 0;
+  padding: 28px 0;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  text-align: center;
+}

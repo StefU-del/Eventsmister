@@ -1,4 +1,9 @@
-from tests.database_setup import client
+import pytest
+from sqlalchemy import event
+
+from tests.database_setup import client, engine
+
+pytestmark = pytest.mark.api
 
 def test_get_posts_returns_list():
     response = client.get("/posts/")
@@ -30,6 +35,8 @@ def test_authenticated_user_can_create_post(auth_headers):
             "description": "A meetup for developers and tech enthusiasts.",
             "category": "Tech",
             "location": "Shoreditch",
+            "image_url": "https://example.com/tech-meetup.jpg",
+            "hashtags": ["Tech", "developers", "tech"],
             "event_date": "2026-08-10T18:00:00",
         }
     )
@@ -42,6 +49,12 @@ def test_authenticated_user_can_create_post(auth_headers):
     assert data["description"] == "A meetup for developers and tech enthusiasts."
     assert data["category"] == "Tech"
     assert data["location"] == "Shoreditch"
+    assert data["image_url"] == "https://example.com/tech-meetup.jpg"
+    assert data["hashtags"] == ["tech", "developers"]
+    assert data["owner"]["id"] == data["owner_id"]
+    assert "username" in data["owner"]
+    assert data["like_count"] == 0
+    assert data["comment_count"] == 0
 
 def test_get_single_post(create_post):
     post = create_post(
@@ -107,4 +120,48 @@ def test_user_cannot_delete_someone_elses_post(create_user, login_user, auth_hea
         headers=other_user_headers,
     )
 
-    assert delete_response.status_code == 403    
+    assert delete_response.status_code == 403
+
+
+def test_post_feed_uses_one_select_query_regardless_of_feed_size(create_post):
+    create_post(title="Query Test Event One")
+    create_post(title="Query Test Event Two")
+    select_statements: list[str] = []
+
+    def capture_select(_connection, _cursor, statement, _parameters, _context, _many):
+        if statement.lstrip().upper().startswith("SELECT"):
+            select_statements.append(statement)
+
+    event.listen(engine, "before_cursor_execute", capture_select)
+    try:
+        response = client.get("/posts/")
+    finally:
+        event.remove(engine, "before_cursor_execute", capture_select)
+
+    assert response.status_code == 200
+    assert len(select_statements) == 1
+
+
+def test_delete_missing_post_returns_404(auth_headers):
+    response = client.delete("/posts/999999", headers=auth_headers)
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Post not found"
+
+
+def test_create_post_rejects_invalid_image_and_hashtag(auth_headers):
+    response = client.post(
+        "/posts/",
+        headers=auth_headers,
+        json={
+            "title": "Invalid image event",
+            "description": "This event should fail validation.",
+            "category": "Music",
+            "location": "Camden",
+            "image_url": "javascript:alert(1)",
+            "hashtags": ["not a hashtag"],
+            "event_date": "2026-08-10T18:00:00",
+        },
+    )
+
+    assert response.status_code == 422

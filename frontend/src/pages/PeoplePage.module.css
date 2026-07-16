@@ -1,0 +1,104 @@
+.searchForm {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  max-width: 760px;
+  padding: 9px 10px 9px 15px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: 0 12px 30px rgba(31, 65, 55, 0.07);
+}
+
+.searchForm > svg {
+  color: var(--color-muted);
+}
+
+.searchForm input {
+  min-width: 0;
+  min-height: 38px;
+  border: 0;
+  outline: 0;
+  color: var(--color-ink);
+  background: transparent;
+  font: inherit;
+}
+
+.searchForm button {
+  min-height: 38px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 7px;
+  color: white;
+  background: var(--color-mint-deep);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.searchForm button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.results {
+  margin-top: 34px;
+}
+
+.userGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.searchPrompt {
+  display: grid;
+  justify-items: center;
+  min-height: 250px;
+  padding: 58px 20px;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.searchPrompt svg {
+  color: var(--color-mint-strong);
+}
+
+.searchPrompt h2 {
+  margin: 13px 0 5px;
+  color: var(--color-ink);
+  font-size: 1.1rem;
+}
+
+.searchPrompt p {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 650px) {
+  .searchForm {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .searchForm button {
+    grid-column: 1 / -1;
+  }
+
+  .userGrid {
+    grid-template-columns: 1fr;
+  }
+}
