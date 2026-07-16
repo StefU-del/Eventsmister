@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
 const authenticationTimeout = 15_000
+const backendUrl = 'http://127.0.0.1:8001'
 
 async function submitRegistration(page: Page, username: string) {
   await page.getByLabel(/^Username/).fill(username)
@@ -48,6 +49,38 @@ async function register(page: Page, username: string) {
   await expect(page.getByRole('link', { name: 'Create event' })).toBeVisible({
     timeout: authenticationTimeout,
   })
+}
+
+async function submitLogin(page: Page, username: string) {
+  await page.getByLabel('Username').fill(username)
+  await page.getByLabel('Password').fill('Password123!')
+
+  const loginResponse = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('/auth/login') && response.request().method() === 'POST',
+    { timeout: authenticationTimeout },
+  )
+  const currentUserResponse = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === '/auth/me' &&
+      response.request().method() === 'GET',
+    { timeout: authenticationTimeout },
+  )
+  const likesResponse = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('/auth/me/likes') && response.request().method() === 'GET',
+    { timeout: authenticationTimeout },
+  )
+  await page.getByRole('button', { name: 'Log in' }).click()
+
+  const [login, currentUser, likes] = await Promise.all([
+    loginResponse,
+    currentUserResponse,
+    likesResponse,
+  ])
+  expect(login.status()).toBe(200)
+  expect(currentUser.status()).toBe(200)
+  expect(likes.status()).toBe(200)
 }
 
 test('two users can complete the event social workflow', async ({ browser, page }) => {
@@ -206,14 +239,24 @@ test('backend registration errors are shown by the frontend', async ({ page }) =
   await expect(page).toHaveURL('http://127.0.0.1:5174/register')
 })
 
-test('protected deep links preserve their destination and survive a refresh', async ({ page }) => {
+test('protected deep links preserve their destination and survive a refresh', async ({
+  page,
+  request,
+}) => {
   const uniqueId = Date.now().toString().slice(-7)
   const username = `returning_${uniqueId}`
+  const registration = await request.post(`${backendUrl}/auth/register`, {
+    data: {
+      username,
+      email: `${username}@example.com`,
+      password: 'Password123!',
+    },
+  })
+  expect(registration.status()).toBe(200)
 
   await page.goto('/people')
   await expect(page).toHaveURL('http://127.0.0.1:5174/login')
-  await page.getByRole('link', { name: 'Create an account' }).click()
-  await submitRegistration(page, username)
+  await submitLogin(page, username)
 
   await expect(page).toHaveURL('http://127.0.0.1:5174/people', {
     timeout: authenticationTimeout,
