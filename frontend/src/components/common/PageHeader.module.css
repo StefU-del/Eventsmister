@@ -1,0 +1,48 @@
+.pageHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 28px;
+}
+
+.pageHeader span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--color-coral-deep);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.pageHeader h1 {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 2.35rem;
+  line-height: 1.08;
+}
+
+.pageHeader p {
+  max-width: 620px;
+  margin: 10px 0 0;
+  color: var(--color-muted);
+  line-height: 1.55;
+}
+
+.action {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 650px) {
+  .pageHeader {
+    display: block;
+  }
+
+  .pageHeader h1 {
+    font-size: 1.9rem;
+  }
+
+  .action {
+    margin-top: 18px;
+  }
+}

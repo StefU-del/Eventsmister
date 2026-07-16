@@ -1,0 +1,22 @@
+.appShell {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+
+.mainContent {
+  min-width: 0;
+}
+
+.routeLoading {
+  width: min(100% - 40px, 1180px);
+  margin: 0 auto;
+  padding: 52px 0 76px;
+}
+
+@media (max-width: 650px) {
+  .routeLoading {
+    width: min(100% - 28px, 1180px);
+    padding: 38px 0 60px;
+  }
+}

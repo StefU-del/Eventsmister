@@ -11,6 +11,10 @@ node_modules
 dist
 dist-ssr
 coverage
+playwright-report
+test-results
+cypress/screenshots
+cypress/videos
 *.local
 
 # Editor directories and files

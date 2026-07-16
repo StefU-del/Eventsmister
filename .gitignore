@@ -209,6 +209,9 @@ tempCodeRunnerFile.py
 # PyPI configuration file
 .pypirc
 
+# Locally uploaded event and profile images
+backend/uploads/
+
 # Marimo
 marimo/_static/
 marimo/_lsp/

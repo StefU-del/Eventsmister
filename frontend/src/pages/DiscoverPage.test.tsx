@@ -1,48 +1,79 @@
-import { render, screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { setLike } from '../api/likes'
 import { getPosts, type Post } from '../api/posts'
+import { authenticatedTestUser } from '../test/fixtures'
+import { renderWithProviders } from '../test/render'
 import { DiscoverPage } from './DiscoverPage'
 
 vi.mock('../api/posts', () => ({
   getPosts: vi.fn(),
 }))
 
+vi.mock('../api/likes', () => ({
+  setLike: vi.fn(),
+}))
+
 const posts: Post[] = [
   {
     id: 1,
     owner_id: 7,
+    owner: {
+      id: 7,
+      username: 'londonlistener',
+      interests: ['music'],
+      profile_photo_url: null,
+      created_at: '2030-03-01T10:00:00Z',
+    },
     title: 'Spring Jazz Courtyard',
     description: 'Live music in a leafy courtyard.',
     category: 'Music',
     location: 'Camden',
+    image_url: 'https://example.com/jazz.jpg',
+    hashtags: ['jazz', 'camden'],
     event_date: '2030-05-20T18:30:00Z',
     created_at: '2030-04-01T10:00:00Z',
+    like_count: 2,
+    comment_count: 1,
   },
   {
     id: 2,
     owner_id: 8,
+    owner: {
+      id: 8,
+      username: 'breadfriend',
+      interests: ['food'],
+      profile_photo_url: null,
+      created_at: '2030-03-02T10:00:00Z',
+    },
     title: 'Bread Making Workshop',
     description: 'Learn to make sourdough with a local baker.',
     category: 'Food',
     location: 'Hackney',
+    image_url: 'https://example.com/bread.jpg',
+    hashtags: ['sourdough'],
     event_date: '2030-05-22T11:00:00Z',
     created_at: '2030-04-02T10:00:00Z',
+    like_count: 0,
+    comment_count: 0,
   },
 ]
 
 const mockedGetPosts = vi.mocked(getPosts)
+const mockedSetLike = vi.mocked(setLike)
 
 beforeEach(() => {
   mockedGetPosts.mockReset()
+  mockedSetLike.mockReset()
 })
 
 describe('DiscoverPage', () => {
   it('shows a loading state while events are requested', () => {
     mockedGetPosts.mockReturnValue(new Promise<Post[]>(() => undefined))
 
-    render(<DiscoverPage />)
+    renderWithProviders(<DiscoverPage />)
 
     expect(screen.getByRole('status')).toHaveTextContent('Finding events')
   })
@@ -50,7 +81,7 @@ describe('DiscoverPage', () => {
   it('shows the empty state when the API has no posts', async () => {
     mockedGetPosts.mockResolvedValue([])
 
-    render(<DiscoverPage />)
+    renderWithProviders(<DiscoverPage />)
 
     expect(
       await screen.findByRole('heading', { name: 'No events yet' }),
@@ -63,7 +94,7 @@ describe('DiscoverPage', () => {
       .mockRejectedValueOnce(new Error('Backend unavailable.'))
       .mockResolvedValueOnce(posts)
 
-    render(<DiscoverPage />)
+    renderWithProviders(<DiscoverPage />)
 
     expect(
       await screen.findByRole('heading', { name: 'Events could not load' }),
@@ -80,7 +111,7 @@ describe('DiscoverPage', () => {
     const user = userEvent.setup()
     mockedGetPosts.mockResolvedValue(posts)
 
-    render(<DiscoverPage />)
+    renderWithProviders(<DiscoverPage />)
 
     await screen.findByRole('heading', { name: 'Spring Jazz Courtyard' })
     const searchInput = screen.getByRole('searchbox', { name: 'Search events' })
@@ -99,7 +130,7 @@ describe('DiscoverPage', () => {
     const user = userEvent.setup()
     mockedGetPosts.mockResolvedValue(posts)
 
-    render(<DiscoverPage />)
+    renderWithProviders(<DiscoverPage />)
 
     await screen.findByRole('heading', { name: 'Spring Jazz Courtyard' })
     await user.type(screen.getByRole('searchbox', { name: 'Search events' }), 'opera')
@@ -111,31 +142,75 @@ describe('DiscoverPage', () => {
     expect(screen.getByRole('heading', { name: 'Spring Jazz Courtyard' })).toBeInTheDocument()
   })
 
-  it('toggles an event saved state', async () => {
+  it('toggles an authenticated event like', async () => {
     const user = userEvent.setup()
     mockedGetPosts.mockResolvedValue(posts)
+    mockedSetLike.mockResolvedValue({ message: 'Post liked successfully', like_count: 3 })
 
-    render(<DiscoverPage />)
-
-    const saveButton = await screen.findByRole('button', {
-      name: 'Save Spring Jazz Courtyard',
+    renderWithProviders(<DiscoverPage />, {
+      auth: {
+        user: { ...authenticatedTestUser, interests: [] },
+        token: 'test-token',
+        isAuthenticated: true,
+      },
     })
-    expect(saveButton).toHaveAttribute('aria-pressed', 'false')
 
-    await user.click(saveButton)
+    const eventHeading = await screen.findByRole('heading', { name: 'Spring Jazz Courtyard' })
+    const eventCard = eventHeading.closest('article')
+    expect(eventCard).not.toBeNull()
+    const likeButton = within(eventCard!).getByRole('button', { name: 'Like event' })
+    expect(likeButton).toHaveAttribute('aria-pressed', 'false')
+
+    await user.click(likeButton)
+
+    expect(within(eventCard!).getByRole('button', { name: 'Unlike event' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    expect(mockedSetLike).toHaveBeenCalledWith('post', posts[0].id, false, 'test-token')
+  })
+
+  it('recommends matching events from the current user interests', async () => {
+    mockedGetPosts.mockResolvedValue(posts)
+
+    renderWithProviders(<DiscoverPage />, {
+      auth: {
+        user: authenticatedTestUser,
+        token: 'test-token',
+        isAuthenticated: true,
+      },
+    })
+
+    const recommendations = await screen.findByRole('region', {
+      name: 'Picked around your interests',
+    })
+    expect(
+      within(recommendations).getByRole('heading', { name: 'Spring Jazz Courtyard' }),
+    ).toBeInTheDocument()
+    expect(
+      within(recommendations).queryByRole('heading', { name: 'Bread Making Workshop' }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('filters the feed from a hashtag URL', async () => {
+    mockedGetPosts.mockResolvedValue(posts)
+
+    renderWithProviders(<DiscoverPage />, { route: '/?tag=sourdough' })
 
     expect(
-      screen.getByRole('button', {
-        name: 'Remove Spring Jazz Courtyard from saved events',
-      }),
-    ).toHaveAttribute('aria-pressed', 'true')
+      await screen.findByRole('heading', { name: 'Bread Making Workshop' }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '#sourdough' })).toBeInTheDocument()
+    expect(
+      screen.queryByRole('heading', { name: 'Spring Jazz Courtyard' }),
+    ).not.toBeInTheDocument()
   })
 
   it('moves focus to search from the browse button', async () => {
     const user = userEvent.setup()
     mockedGetPosts.mockResolvedValue([])
 
-    render(<DiscoverPage />)
+    renderWithProviders(<DiscoverPage />)
 
     await screen.findByRole('heading', { name: 'No events yet' })
     await user.click(screen.getByRole('button', { name: 'Browse events' }))

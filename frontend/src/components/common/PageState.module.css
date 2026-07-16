@@ -1,0 +1,49 @@
+.pageState {
+  display: grid;
+  justify-items: center;
+  min-height: 320px;
+  padding: 64px 20px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: 8px;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.compact {
+  min-height: 220px;
+  padding: 42px 18px;
+}
+
+.pageState > svg {
+  color: var(--color-mint-strong);
+}
+
+.pageState h2 {
+  margin: 14px 0 6px;
+  color: var(--color-ink);
+  font-size: 1.15rem;
+}
+
+.pageState p {
+  max-width: 480px;
+  margin: 0 0 18px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.spinner {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

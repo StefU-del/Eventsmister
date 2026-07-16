@@ -1,75 +1,96 @@
-import pytest
 from uuid import uuid4
-from tests.database_setup import client
+
+import pytest
+
+from app.database import Base
+from tests.database_setup import client, engine
+
+
+@pytest.fixture(scope="session", autouse=True)
+def close_test_resources():
+    yield
+    client.close()
+    engine.dispose()
+
+
+@pytest.fixture(autouse=True)
+def isolated_database():
+    # API requests commit independently, so rebuild the in-memory schema per test.
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    yield
+
 
 @pytest.fixture
 def test_user_data():
     return {
         "username": "testuser",
         "password": "Password123!",
-        "email": "testuser@example.com"
+        "email": "testuser@example.com",
     }
+
 
 @pytest.fixture
 def create_user():
     def _create_user(username: str, email: str, password: str):
         response = client.post(
-            "auth/register",
+            "/auth/register",
             json={
                 "username": username,
                 "password": password,
-                "email": email
+                "email": email,
             },
         )
 
         assert response.status_code == 200
         return response.json()
-    
+
     return _create_user
+
 
 @pytest.fixture
 def login_user():
-    def _login_user(username:str, password:str):
+    def _login_user(username: str, password: str):
         response = client.post(
-            "auth/login",
+            "/auth/login",
             json={
                 "username": username,
-                "password": password
-            }
+                "password": password,
+            },
         )
 
         assert response.status_code == 200
         return response.json()["access_token"]
+
     return _login_user
+
 
 @pytest.fixture
 def auth_headers(create_user, login_user):
-    user_id = uuid4().hex
-
-    username=f"testuser_{user_id}"
-    email=f"testuser_{user_id}@example.com"
-    password="Password123!"
+    user_id = uuid4().hex[:8]
+    username = f"testuser_{user_id}"
+    email = f"testuser_{user_id}@example.com"
+    password = "Password123!"
 
     create_user(username, email, password)
-    token=login_user(username, password)
+    token = login_user(username, password)
 
-    return {
-        "Authorization" : f"Bearer {token}"
-    }
+    return {"Authorization": f"Bearer {token}"}
+
 
 @pytest.fixture
 def create_post(auth_headers):
     def _create_post(
-            title: str = "Test Event",
-            description: str = "A test event description.",
-            category: str = "Music",
-            location: str = "Camden",
-            event_date: str = "2026-07-20T19:30:00",
+        title: str = "Test Event",
+        description: str = "A test event description.",
+        category: str = "Music",
+        location: str = "Camden",
+        event_date: str = "2026-07-20T19:30:00",
     ):
         response = client.post(
             "/posts/",
             headers=auth_headers,
-                json={
+            json={
                 "title": title,
                 "description": description,
                 "category": category,
@@ -80,7 +101,7 @@ def create_post(auth_headers):
 
         assert response.status_code == 200
         return response.json()
-    
+
     return _create_post
 
 
@@ -94,16 +115,10 @@ def create_comment(auth_headers):
         response = client.post(
             f"/posts/{post_id}/comments",
             headers=headers or auth_headers,
-            json={
-                "content": content,
-            },
+            json={"content": content},
         )
 
         assert response.status_code == 200
         return response.json()
-    
+
     return _create_comment
-    
-
-
-

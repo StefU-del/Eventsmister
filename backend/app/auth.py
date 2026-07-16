@@ -14,27 +14,22 @@ if not SECRET_KEY:
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-password_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto"
-)
+password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 def hash_password(password: str) -> str:
     return password_context.hash(password)
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return password_context.verify(plain_password, hashed_password)
 
+
 def create_access_token(data: dict) -> str:
-
-    # create a copy of to modify - original remains as is to reduce the scope of function effect
+    # Copy the claims so adding an expiry never mutates the caller's dictionary.
     to_encode = data.copy()
-
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-
-    to_encode.update({
-        "exp": expire
-    })
+    to_encode.update({"exp": expire})
 
     encoded_jwt = jwt.encode(
         to_encode,

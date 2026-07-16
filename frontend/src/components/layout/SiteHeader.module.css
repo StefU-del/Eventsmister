@@ -1,0 +1,207 @@
+.siteHeader {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.headerInner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(100% - 40px, 1180px);
+  min-height: 68px;
+  margin: 0 auto;
+}
+
+.navigationWrap,
+.navigation,
+.accountActions {
+  display: flex;
+  align-items: center;
+}
+
+.navigationWrap {
+  gap: 34px;
+}
+
+.navigation {
+  gap: 24px;
+}
+
+.navigation a,
+.loginLink,
+.profileLink {
+  color: var(--color-muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.navigation a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.navigation a:hover,
+.loginLink:hover,
+.profileLink:hover,
+.navigation .activeNavItem {
+  color: var(--color-ink);
+}
+
+.activeNavItem {
+  text-decoration: underline;
+  text-decoration-color: var(--color-mint-strong);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+
+.accountActions {
+  gap: 10px;
+}
+
+.createLink,
+.joinLink,
+.profileLink,
+.logoutButton,
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  font: inherit;
+}
+
+.createLink,
+.joinLink {
+  min-height: 38px;
+  padding: 0 13px;
+  border-radius: 7px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.createLink {
+  gap: 6px;
+  color: var(--color-mint-deep);
+  background: var(--color-mint-soft);
+}
+
+.joinLink {
+  color: white;
+  background: var(--color-ink);
+}
+
+.profileLink {
+  gap: 6px;
+}
+
+.logoutButton,
+.menuButton {
+  width: 38px;
+  height: 38px;
+  border-radius: 7px;
+  color: var(--color-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.logoutButton:hover,
+.menuButton:hover {
+  color: var(--color-ink);
+  background: var(--color-canvas);
+}
+
+.menuButton {
+  display: none;
+}
+
+@media (max-width: 850px) {
+  .navigationWrap {
+    gap: 20px;
+  }
+
+  .profileLink {
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 700px) {
+  .siteHeader {
+    position: static;
+  }
+
+  .headerInner {
+    width: min(100% - 28px, 1180px);
+    min-height: 62px;
+  }
+
+  .menuButton {
+    display: inline-flex;
+  }
+
+  .navigationWrap {
+    position: absolute;
+    top: calc(100% + 1px);
+    right: -14px;
+    left: -14px;
+    display: none;
+    padding: 16px 14px 18px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+    box-shadow: 0 14px 24px rgba(24, 48, 42, 0.08);
+  }
+
+  .navigationWrap.menuOpen,
+  .navigation,
+  .accountActions {
+    display: grid;
+  }
+
+  .navigationWrap.menuOpen {
+    gap: 14px;
+  }
+
+  .navigation,
+  .accountActions {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .navigation a,
+  .loginLink,
+  .profileLink {
+    min-height: 42px;
+    padding: 0 10px;
+    line-height: 42px;
+  }
+
+  .activeNavItem {
+    text-decoration: none;
+    background: var(--color-mint-soft);
+    border-radius: 6px;
+  }
+
+  .profileLink {
+    max-width: none;
+  }
+
+  .createLink,
+  .joinLink {
+    justify-content: flex-start;
+  }
+
+  .logoutButton {
+    justify-content: flex-start;
+    width: 100%;
+    padding-left: 10px;
+  }
+}

@@ -1,10 +1,14 @@
 from uuid import uuid4
 
+import pytest
+
 from tests.database_setup import client
 
+pytestmark = pytest.mark.api
 
-def test_search_users_returns_matching_users(create_user):
-    unique_id = uuid4().hex
+
+def test_search_users_returns_matching_users(create_user, auth_headers):
+    unique_id = uuid4().hex[:8]
 
     username = f"searchuser_{unique_id}"
     email = f"searchuser_{unique_id}@example.com"
@@ -16,7 +20,10 @@ def test_search_users_returns_matching_users(create_user):
         password=password,
     )
 
-    response = client.get(f"/users/search?query={username}")
+    response = client.get(
+        f"/users/search?query={username}",
+        headers=auth_headers,
+    )
 
     assert response.status_code == 200
 
@@ -27,8 +34,8 @@ def test_search_users_returns_matching_users(create_user):
     assert data[0]["username"] == username
 
 
-def test_search_users_does_not_expose_hashed_password(create_user):
-    unique_id = uuid4().hex
+def test_search_users_does_not_expose_private_fields(create_user, auth_headers):
+    unique_id = uuid4().hex[:8]
 
     username = f"privateuser_{unique_id}"
     email = f"privateuser_{unique_id}@example.com"
@@ -40,17 +47,28 @@ def test_search_users_does_not_expose_hashed_password(create_user):
         password=password,
     )
 
-    response = client.get(f"/users/search?query={username}")
+    response = client.get(
+        f"/users/search?query={username}",
+        headers=auth_headers,
+    )
 
     assert response.status_code == 200
 
     data = response.json()
 
     assert "hashed_password" not in data[0]
+    assert "email" not in data[0]
+    assert "date_of_birth" not in data[0]
+
+
+def test_search_users_requires_authentication():
+    response = client.get("/users/search?query=someone")
+
+    assert response.status_code == 401
 
 
 def test_get_user_by_id(create_user):
-    unique_id = uuid4().hex
+    unique_id = uuid4().hex[:8]
 
     username = f"profileuser_{unique_id}"
     email = f"profileuser_{unique_id}@example.com"
@@ -70,7 +88,9 @@ def test_get_user_by_id(create_user):
 
     assert data["id"] == user["id"]
     assert data["username"] == username
-    assert data["email"] == email
+    assert data["interests"] == []
+    assert data["profile_photo_url"] is None
+    assert "email" not in data
     assert "hashed_password" not in data
 
 

@@ -1,0 +1,49 @@
+.dateBadge {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 62px;
+  border-radius: 7px;
+  color: var(--color-mint-deep);
+  background: var(--color-mint-soft);
+}
+
+.compact {
+  width: 50px;
+  height: 54px;
+}
+
+.dateBadge span {
+  font-size: 0.66rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dateBadge strong {
+  margin-top: 1px;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.coral {
+  color: #8e3f35;
+  background: var(--color-coral-soft);
+}
+
+.yellow {
+  color: #705511;
+  background: var(--color-yellow-soft);
+}
+
+.sky {
+  color: #255d73;
+  background: var(--color-sky-soft);
+}
+
+.mint {
+  color: var(--color-mint-deep);
+  background: var(--color-mint-soft);
+}
