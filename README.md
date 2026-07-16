@@ -111,8 +111,9 @@ npm run dev
 ```
 
 The frontend is available at `http://localhost:5173` by default. The home page
-currently uses local sample events; connecting it to the backend is the next
-integration step.
+loads its events from the backend `GET /posts/` endpoint. Set
+`VITE_API_BASE_URL` in `frontend/.env.local` only when the API is running at a
+different address.
 
 ## Authentication
 
@@ -273,6 +274,8 @@ to `main` and on pull requests.
 - `backend/eventsmister.db` is the local SQLite development database.
 - `SECRET_KEY` must be set in `backend/.env` or the environment before starting
   the backend.
+- `FRONTEND_ORIGINS` controls which browser origins can access the backend and
+  defaults to the local Vite addresses.
 - Database tables are created automatically when `app.main` starts.
 - JWT authentication protects write actions for posts, comments, and likes.
 - API behavior is covered by pytest tests for auth, posts, comments, likes, and

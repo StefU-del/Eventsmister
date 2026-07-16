@@ -27,5 +27,14 @@ npm run preview  # Preview the production build
 - Component styles use CSS Modules, such as `src/App.module.css`.
 - Spring accent colours are exposed as CSS custom properties in `src/index.css`.
 
-The home page currently uses local sample events. Connecting it to the FastAPI
-`GET /posts/` endpoint is the next integration step.
+The home page loads event posts from the FastAPI `GET /posts/` endpoint. Start
+the backend on `http://127.0.0.1:8000` before running the frontend.
+
+The default API URL can be changed in `.env.local`:
+
+```text
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
+Use `.env.example` as the committed template. Only variables prefixed with
+`VITE_` are exposed to frontend code, so secrets must remain in `backend/.env`.

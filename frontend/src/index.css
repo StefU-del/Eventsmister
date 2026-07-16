@@ -68,3 +68,16 @@ img {
   color: var(--color-ink);
   background: var(--color-yellow-soft);
 }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-sky) 70%, white);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
