@@ -1,0 +1,318 @@
+.eventLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.9fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.singleEventLayout {
+  grid-template-columns: minmax(0, 760px);
+}
+
+.featuredCard,
+.upcomingPanel {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.featuredCard {
+  overflow: hidden;
+}
+
+.featuredMedia {
+  position: relative;
+  aspect-ratio: 16 / 8.6;
+  overflow: hidden;
+  background: var(--color-mint-soft);
+}
+
+.featuredMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.categoryBadge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  padding: 6px 9px;
+  border-radius: 6px;
+  color: var(--color-mint-deep);
+  background: rgba(232, 248, 239, 0.94);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.saveButton,
+.listSaveButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.saveButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: var(--color-ink);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 4px 14px rgba(20, 42, 36, 0.14);
+}
+
+.saveButton[aria-pressed='true'],
+.listSaveButton[aria-pressed='true'] {
+  color: var(--color-coral-deep);
+}
+
+.featuredBody {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  padding: 22px;
+}
+
+.dateBlock,
+.smallDate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 62px;
+  border-radius: 7px;
+  color: var(--color-mint-deep);
+  background: var(--color-mint-soft);
+}
+
+.smallDate.mint {
+  color: var(--color-mint-deep);
+  background: var(--color-mint-soft);
+}
+
+.dateBlock span,
+.smallDate span {
+  font-size: 0.66rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.dateBlock strong,
+.smallDate strong {
+  margin-top: 1px;
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.eventMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.eventMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.eventCopy h3 {
+  margin: 8px 0 7px;
+  color: var(--color-ink);
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.eventCopy > p {
+  max-width: 610px;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.upcomingPanel {
+  padding: 20px;
+}
+
+.upcomingHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 1px 1px 15px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.upcomingHeading h3 {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 1rem;
+}
+
+.upcomingHeading span {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+}
+
+.upcomingList {
+  display: grid;
+}
+
+.upcomingCard {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  min-height: 104px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.upcomingCard:last-child {
+  border-bottom: 0;
+}
+
+.smallDate {
+  width: 50px;
+  height: 54px;
+}
+
+.smallDate strong {
+  font-size: 1.2rem;
+}
+
+.smallDate.coral {
+  color: #8e3f35;
+  background: var(--color-coral-soft);
+}
+
+.smallDate.yellow {
+  color: #705511;
+  background: var(--color-yellow-soft);
+}
+
+.smallDate.sky {
+  color: #255d73;
+  background: var(--color-sky-soft);
+}
+
+.smallCategory {
+  color: var(--color-muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.upcomingCopy h4 {
+  margin: 4px 0 5px;
+  overflow-wrap: anywhere;
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.upcomingCopy p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-muted);
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.listSaveButton {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: var(--color-muted);
+  background: transparent;
+}
+
+.listSaveButton:hover {
+  color: var(--color-ink);
+  background: var(--color-canvas);
+}
+
+@media (max-width: 850px) {
+  .eventLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .upcomingList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    padding-top: 16px;
+  }
+
+  .upcomingCard {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    min-width: 0;
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .listSaveButton {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 650px) {
+  .featuredMedia {
+    aspect-ratio: 4 / 3;
+  }
+
+  .featuredBody {
+    gap: 13px;
+    padding: 17px;
+  }
+
+  .dateBlock {
+    width: 50px;
+    height: 56px;
+  }
+
+  .eventMeta {
+    display: grid;
+    gap: 5px;
+  }
+
+  .eventCopy h3 {
+    font-size: 1.15rem;
+  }
+
+  .eventCopy > p {
+    font-size: 0.82rem;
+  }
+
+  .upcomingPanel {
+    padding: 17px;
+  }
+
+  .upcomingList {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding-top: 0;
+  }
+
+  .upcomingCard {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    min-height: 94px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .listSaveButton {
+    grid-column: auto;
+  }
+}

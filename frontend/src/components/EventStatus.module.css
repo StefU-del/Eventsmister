@@ -1,0 +1,63 @@
+.statusState {
+  display: grid;
+  justify-items: center;
+  min-height: 330px;
+  padding: 64px 20px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: 8px;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.statusState > svg {
+  color: var(--color-mint-strong);
+}
+
+.statusState h3 {
+  margin: 14px 0 5px;
+  color: var(--color-ink);
+}
+
+.statusState p {
+  max-width: 470px;
+  margin: 0 0 18px;
+  font-size: 0.86rem;
+}
+
+.statusState button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 7px;
+  color: var(--color-mint-deep);
+  background: var(--color-mint-soft);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.statusState button:hover {
+  background: #d3eddf;
+}
+
+.spinner {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

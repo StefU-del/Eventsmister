@@ -1,0 +1,40 @@
+.discovery {
+  width: min(100% - 40px, 1180px);
+  margin: 0 auto;
+  padding: 34px 0 72px;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.sectionKicker {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--color-coral-deep);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sectionHeading h2 {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 1.65rem;
+  line-height: 1.2;
+}
+
+@media (max-width: 650px) {
+  .discovery {
+    width: min(100% - 28px, 1180px);
+    padding-top: 28px;
+  }
+
+  .sectionHeading {
+    display: block;
+  }
+}
