@@ -1,12 +1,53 @@
 import { expect, test, type Page } from '@playwright/test'
 
-async function register(page: Page, username: string) {
-  await page.goto('/register')
+const authenticationTimeout = 15_000
+
+async function submitRegistration(page: Page, username: string) {
   await page.getByLabel(/^Username/).fill(username)
   await page.getByLabel('Email').fill(`${username}@example.com`)
   await page.getByLabel(/^Password/).fill('Password123!')
+
+  const registrationResponse = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('/auth/register') && response.request().method() === 'POST',
+    { timeout: authenticationTimeout },
+  )
+  const loginResponse = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('/auth/login') && response.request().method() === 'POST',
+    { timeout: authenticationTimeout },
+  )
+  const currentUserResponse = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === '/auth/me' &&
+      response.request().method() === 'GET',
+    { timeout: authenticationTimeout },
+  )
+  const likesResponse = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('/auth/me/likes') && response.request().method() === 'GET',
+    { timeout: authenticationTimeout },
+  )
   await page.getByRole('button', { name: 'Create account' }).click()
-  await expect(page.getByRole('link', { name: 'Create event' })).toBeVisible()
+
+  const [registration, login, currentUser, likes] = await Promise.all([
+    registrationResponse,
+    loginResponse,
+    currentUserResponse,
+    likesResponse,
+  ])
+  expect(registration.status()).toBe(200)
+  expect(login.status()).toBe(200)
+  expect(currentUser.status()).toBe(200)
+  expect(likes.status()).toBe(200)
+}
+
+async function register(page: Page, username: string) {
+  await page.goto('/register')
+  await submitRegistration(page, username)
+  await expect(page.getByRole('link', { name: 'Create event' })).toBeVisible({
+    timeout: authenticationTimeout,
+  })
 }
 
 test('two users can complete the event social workflow', async ({ browser, page }) => {
@@ -172,12 +213,11 @@ test('protected deep links preserve their destination and survive a refresh', as
   await page.goto('/people')
   await expect(page).toHaveURL('http://127.0.0.1:5174/login')
   await page.getByRole('link', { name: 'Create an account' }).click()
-  await page.getByLabel(/^Username/).fill(username)
-  await page.getByLabel('Email').fill(`${username}@example.com`)
-  await page.getByLabel(/^Password/).fill('Password123!')
-  await page.getByRole('button', { name: 'Create account' }).click()
+  await submitRegistration(page, username)
 
-  await expect(page).toHaveURL('http://127.0.0.1:5174/people')
+  await expect(page).toHaveURL('http://127.0.0.1:5174/people', {
+    timeout: authenticationTimeout,
+  })
   await expect(page.getByRole('heading', { name: 'Find people' })).toBeVisible()
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Find people' })).toBeVisible()
