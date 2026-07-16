@@ -7,7 +7,7 @@ import { getDefaultEventDate, getMinimumEventDate } from '../../utils/eventDispl
 import { parseHashtags } from '../../utils/hashtags'
 import styles from './EventForm.module.css'
 
-const categories = ['Music', 'Food', 'Arts', 'Community', 'Sport', 'Tech', 'Learning', 'Other']
+const categories = ['Music', 'Food', 'Arts', 'Community', 'Sports', 'Tech', 'Learning', 'Other']
 
 type EventFormProps = {
   isSubmitting: boolean

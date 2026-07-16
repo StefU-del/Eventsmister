@@ -37,6 +37,7 @@ backend/
     main.py              FastAPI configuration and router registration
     models.py            SQLAlchemy data models
     schemas.py           Validated request and response models
+    seed_demo.py          Repeatable realistic development-data generator
   tests/
     api/                 HTTP contract and validation tests
     database/            Model, constraint, index, and migration tests
@@ -119,6 +120,26 @@ npm run dev
 
 The client runs at `http://localhost:5173`. Set `VITE_API_BASE_URL` in
 `frontend/.env.local` only when the API uses a different address.
+
+## Demo Data
+
+Populate the development database with a busier, repeatable social dataset:
+
+```bash
+cd backend
+../.venv/bin/python -m app.seed_demo
+```
+
+This creates 30 completed demo profiles, 100 future events with unique seeded
+images, 400 comments, 796 event likes, and 800 comment likes. Sign in with
+`demo_aisha` and password `DemoPass123!` to explore the populated application.
+All demo accounts use that password.
+
+The command is safe to rerun: it replaces accounts whose usernames start with
+`demo_` and their associated social activity, while preserving ordinary
+development users and their content. The seeded event and profile images use
+remote placeholder services, so viewing those images requires an internet
+connection.
 
 ## Application Routes
 

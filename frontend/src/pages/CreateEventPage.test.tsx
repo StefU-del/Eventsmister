@@ -36,6 +36,8 @@ describe('CreateEventPage', () => {
       },
     })
 
+    expect(screen.getByRole('option', { name: 'Sports' })).toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: 'Sport' })).not.toBeInTheDocument()
     await user.type(screen.getByLabelText('Event title'), 'Rooftop film night')
     await user.type(
       screen.getByLabelText('Description'),

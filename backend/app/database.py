@@ -84,6 +84,15 @@ def migrate_legacy_schema(database_engine: Engine = engine) -> None:
                         )
                     )
 
+            if "category" in column_names:
+                # Keep records created with the old singular UI label consistent.
+                connection.execute(
+                    text(
+                        "UPDATE posts SET category = 'Sports' "
+                        "WHERE lower(trim(category)) = 'sport'"
+                    )
+                )
+
             if "owner_id" in column_names:
                 connection.execute(
                     text(
