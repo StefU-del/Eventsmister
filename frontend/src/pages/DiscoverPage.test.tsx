@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { setLike } from '../api/likes'
+import { searchExternalEvents } from '../api/externalEvents'
 import { getPosts, type Post } from '../api/posts'
 import { authenticatedTestUser } from '../test/fixtures'
 import { renderWithProviders } from '../test/render'
@@ -14,6 +15,10 @@ vi.mock('../api/posts', () => ({
 
 vi.mock('../api/likes', () => ({
   setLike: vi.fn(),
+}))
+
+vi.mock('../api/externalEvents', () => ({
+  searchExternalEvents: vi.fn(),
 }))
 
 const posts: Post[] = [
@@ -63,10 +68,12 @@ const posts: Post[] = [
 
 const mockedGetPosts = vi.mocked(getPosts)
 const mockedSetLike = vi.mocked(setLike)
+const mockedSearchExternalEvents = vi.mocked(searchExternalEvents)
 
 beforeEach(() => {
   mockedGetPosts.mockReset()
   mockedSetLike.mockReset()
+  mockedSearchExternalEvents.mockReset()
 })
 
 describe('DiscoverPage', () => {
@@ -216,5 +223,115 @@ describe('DiscoverPage', () => {
     await user.click(screen.getByRole('button', { name: 'Browse events' }))
 
     expect(screen.getByRole('searchbox', { name: 'Search events' })).toHaveFocus()
+  })
+
+  it('keeps wider search private to authenticated users', async () => {
+    mockedGetPosts.mockResolvedValue(posts)
+
+    renderWithProviders(<DiscoverPage />)
+
+    await screen.findByRole('heading', { name: 'Spring Jazz Courtyard' })
+    expect(screen.queryByRole('button', { name: 'Search wider' })).not.toBeInTheDocument()
+  })
+
+  it('searches connected providers and renders attributed external events', async () => {
+    const user = userEvent.setup()
+    mockedGetPosts.mockResolvedValue(posts)
+    mockedSearchExternalEvents.mockResolvedValue({
+      events: [
+        {
+          external_id: 'skiddle-81',
+          source: 'skiddle',
+          source_name: 'Skiddle',
+          source_url: 'https://www.skiddle.com/events/81',
+          source_logo_url: null,
+          title: 'Outside jazz festival',
+          description: 'A full afternoon of new London jazz.',
+          category: 'Music',
+          location: 'Hackney, London',
+          image_url: 'https://images.example/jazz.jpg',
+          event_date: '2030-08-20T19:00:00Z',
+        },
+      ],
+      providers: [
+        {
+          source: 'skiddle',
+          source_name: 'Skiddle',
+          enabled: true,
+          returned: 1,
+          error: null,
+        },
+        {
+          source: 'ticketmaster',
+          source_name: 'Ticketmaster',
+          enabled: true,
+          returned: 0,
+          error: 'The provider timed out.',
+        },
+      ],
+      terms: ['jazz', 'music'],
+      search_suggestions_html: '<div>Google Search suggestions</div>',
+    })
+
+    renderWithProviders(<DiscoverPage />, {
+      auth: {
+        user: authenticatedTestUser,
+        token: 'test-token',
+        isAuthenticated: true,
+      },
+    })
+    await screen.findAllByRole('heading', { name: 'Spring Jazz Courtyard' })
+    await user.type(screen.getByRole('searchbox', { name: 'Search events' }), 'jazz')
+    await user.click(screen.getByRole('button', { name: 'Search wider' }))
+
+    expect(
+      await screen.findByRole('heading', { name: 'Outside jazz festival' }),
+    ).toBeInTheDocument()
+    expect(mockedSearchExternalEvents).toHaveBeenCalledWith(
+      'jazz',
+      'test-token',
+      expect.any(AbortSignal),
+    )
+    expect(screen.getByRole('link', { name: 'View on Skiddle' })).toHaveAttribute(
+      'href',
+      'https://www.skiddle.com/events/81',
+    )
+    expect(screen.getByRole('status')).toHaveTextContent('Ticketmaster could not respond')
+    expect(screen.getByTitle('Google Search suggestions')).toBeInTheDocument()
+  })
+
+  it('keeps Google attribution visible when no grounded event is usable', async () => {
+    const user = userEvent.setup()
+    mockedGetPosts.mockResolvedValue(posts)
+    mockedSearchExternalEvents.mockResolvedValue({
+      events: [],
+      providers: [
+        {
+          source: 'gemini',
+          source_name: 'Google Search',
+          enabled: true,
+          returned: 0,
+          error: null,
+        },
+      ],
+      terms: ['jazz'],
+      search_suggestions_html: '<div>Google Search suggestions</div>',
+    })
+
+    renderWithProviders(<DiscoverPage />, {
+      auth: {
+        user: authenticatedTestUser,
+        token: 'test-token',
+        isAuthenticated: true,
+      },
+    })
+    await screen.findAllByRole('heading', { name: 'Spring Jazz Courtyard' })
+    await user.type(screen.getByRole('searchbox', { name: 'Search events' }), 'jazz')
+    await user.click(screen.getByRole('button', { name: 'Search wider' }))
+
+    expect(
+      await screen.findByRole('heading', { name: 'No wider matches found' }),
+    ).toBeInTheDocument()
+    expect(screen.getByTitle('Google Search suggestions')).toBeInTheDocument()
   })
 })

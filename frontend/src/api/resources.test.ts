@@ -9,6 +9,7 @@ import {
 } from './auth'
 import { apiRequest } from './client'
 import { createComment, deleteComment, getComments } from './comments'
+import { searchExternalEvents } from './externalEvents'
 import { setLike } from './likes'
 import { uploadImage } from './uploads'
 import { getUser, getUserPosts, searchUsers } from './users'
@@ -92,6 +93,60 @@ describe('API resource modules', () => {
     )
     expect(requestMock).toHaveBeenNthCalledWith(2, '/users/3', { signal })
     expect(requestMock).toHaveBeenNthCalledWith(3, '/users/3/posts', { signal })
+  })
+
+  it('constructs and validates an external event search', async () => {
+    const signal = new AbortController().signal
+    const discovery = {
+      events: [
+        {
+          external_id: 'skiddle-1',
+          source: 'skiddle',
+          source_name: 'Skiddle',
+          source_url: 'https://skiddle.example/event',
+          source_logo_url: null,
+          title: 'Outside jazz night',
+          description: 'A listed event.',
+          category: 'Music',
+          location: 'London',
+          image_url: null,
+          event_date: '2030-08-20T19:00:00Z',
+        },
+      ],
+      providers: [
+        {
+          source: 'skiddle',
+          source_name: 'Skiddle',
+          enabled: true,
+          returned: 1,
+          error: null,
+        },
+      ],
+      terms: ['live jazz'],
+      search_suggestions_html: null,
+    }
+    requestMock.mockResolvedValueOnce(discovery)
+
+    await expect(
+      searchExternalEvents(' live jazz ', 'token', signal),
+    ).resolves.toEqual(discovery)
+    expect(requestMock).toHaveBeenCalledWith(
+      '/discover/external?query=live+jazz',
+      { token: 'token', signal },
+    )
+  })
+
+  it('rejects malformed external event responses', async () => {
+    requestMock.mockResolvedValueOnce({
+      events: [{}],
+      providers: [],
+      terms: [],
+      search_suggestions_html: null,
+    })
+
+    await expect(searchExternalEvents('jazz', 'token')).rejects.toThrow(
+      'The external event service returned an unexpected response.',
+    )
   })
 
   it('constructs a multipart image upload request', async () => {

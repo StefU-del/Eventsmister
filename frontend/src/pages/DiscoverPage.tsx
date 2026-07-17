@@ -5,17 +5,20 @@ import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { PageState } from '../components/common/PageState'
 import { EventFilters } from '../components/events/EventFilters'
+import { ExternalEventResults } from '../components/events/ExternalEventResults'
 import { EventGrid } from '../components/events/EventGrid'
 import { EventRecommendations } from '../components/events/EventRecommendations'
 import { SearchIntro } from '../components/SearchIntro'
 import { usePosts } from '../hooks/usePosts'
+import { useExternalEvents } from '../hooks/useExternalEvents'
 import { getRecommendedPosts } from '../utils/recommendations'
 import pageStyles from './Page.module.css'
 import styles from './DiscoverPage.module.css'
 
 export function DiscoverPage() {
   const { posts, isLoading, loadError, retry } = usePosts()
-  const { user } = useAuth()
+  const { user, token, isAuthenticated } = useAuth()
+  const externalEvents = useExternalEvents()
   const [searchParams, setSearchParams] = useSearchParams()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('All')
@@ -49,6 +52,9 @@ export function DiscoverPage() {
   )
   const showRecommendations =
     recommendations.length > 0 && !query.trim() && category === 'All' && !selectedHashtag
+  const canSearchExternal = Boolean(
+    isAuthenticated && token && (query.trim() || user?.interests.length),
+  )
 
   function clearFilters() {
     setQuery('')
@@ -56,9 +62,36 @@ export function DiscoverPage() {
     setSearchParams({})
   }
 
+  function searchExternalEvents() {
+    if (token && canSearchExternal) {
+      void externalEvents.search(query, token)
+    }
+  }
+
+  function retryExternalSearch() {
+    if (token) {
+      void externalEvents.search(externalEvents.lastQuery, token)
+    }
+  }
+
   return (
     <>
-      <SearchIntro query={query} onQueryChange={setQuery} />
+      <SearchIntro
+        query={query}
+        onQueryChange={setQuery}
+        canSearchExternal={canSearchExternal}
+        isSearchingExternal={externalEvents.isLoading}
+        onExternalSearch={isAuthenticated ? searchExternalEvents : undefined}
+      />
+      <ExternalEventResults
+        discovery={externalEvents.discovery}
+        isLoading={externalEvents.isLoading}
+        error={externalEvents.error}
+        hasSearched={Boolean(
+          externalEvents.discovery || externalEvents.isLoading || externalEvents.error,
+        )}
+        onRetry={retryExternalSearch}
+      />
       {showRecommendations && <EventRecommendations posts={recommendations} />}
       <section className={`${pageStyles.page} ${styles.discovery}`} aria-labelledby="discover-title">
         <div className={styles.sectionHeading}>

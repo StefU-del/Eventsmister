@@ -94,3 +94,23 @@ def test_legacy_tables_receive_profile_and_discovery_columns(tmp_path):
     assert {"date_of_birth", "interests", "profile_photo_url"}.issubset(user_columns)
     assert {"image_url", "hashtags"}.issubset(post_columns)
     database_engine.dispose()
+
+
+def test_legacy_sport_category_is_renamed_to_sports(tmp_path):
+    database_engine = create_engine(f"sqlite:///{tmp_path / 'legacy-category.db'}")
+    with database_engine.begin() as connection:
+        connection.execute(
+            text("CREATE TABLE posts (id INTEGER PRIMARY KEY, category VARCHAR(50))")
+        )
+        connection.execute(text("INSERT INTO posts (id, category) VALUES (1, 'Sport')"))
+        connection.execute(text("INSERT INTO posts (id, category) VALUES (2, 'Music')"))
+
+    migrate_legacy_schema(database_engine)
+
+    with database_engine.connect() as connection:
+        categories = connection.execute(
+            text("SELECT category FROM posts ORDER BY id")
+        ).scalars().all()
+
+    assert categories == ["Sports", "Music"]
+    database_engine.dispose()

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import models
 from app.database import Base, engine, migrate_legacy_schema
-from app.routers import auth, comments, likes, posts, uploads, users
+from app.routers import auth, comments, discovery, likes, posts, uploads, users
 
 migrate_legacy_schema()
 Base.metadata.create_all(bind=engine)
@@ -49,6 +49,7 @@ app.include_router(comments.router)
 app.include_router(likes.router)
 app.include_router(users.router)
 app.include_router(uploads.router)
+app.include_router(discovery.router)
 
 
 @app.get("/")
