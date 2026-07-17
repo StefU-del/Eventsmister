@@ -27,6 +27,37 @@ export type Post = {
   comment_count: number
 }
 
+export type ExternalEventSource = 'skiddle' | 'ticketmaster' | 'gemini'
+
+export type ExternalEvent = {
+  external_id: string
+  source: ExternalEventSource
+  source_name: string
+  source_url: string
+  source_logo_url: string | null
+  title: string
+  description: string
+  category: string
+  location: string
+  image_url: string | null
+  event_date: string
+}
+
+export type ExternalProviderStatus = {
+  source: ExternalEventSource
+  source_name: string
+  enabled: boolean
+  returned: number
+  error: string | null
+}
+
+export type ExternalDiscovery = {
+  events: ExternalEvent[]
+  providers: ExternalProviderStatus[]
+  terms: string[]
+  search_suggestions_html: string | null
+}
+
 export type Comment = {
   id: number
   owner_id: number

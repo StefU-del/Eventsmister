@@ -27,6 +27,7 @@ def test_openapi_documents_resources_and_bearer_authentication():
         "/posts/",
         "/uploads/images",
         "/users/search",
+        "/discover/external",
     }.issubset(document["paths"])
     assert document["components"]["securitySchemes"]["OAuth2PasswordBearer"]["type"] == "oauth2"
 

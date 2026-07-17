@@ -1,5 +1,6 @@
 import re
 from datetime import date, datetime
+from typing import Literal
 from urllib.parse import urlparse
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
@@ -167,6 +168,49 @@ class PostResponse(BaseModel):
     created_at: datetime
     like_count: int
     comment_count: int
+
+
+class ExternalEventResponse(BaseModel):
+    external_id: str = Field(min_length=1, max_length=200)
+    source: Literal["skiddle", "ticketmaster", "gemini"]
+    source_name: str = Field(min_length=1, max_length=50)
+    source_url: str = Field(max_length=2000)
+    source_logo_url: str | None = Field(default=None, max_length=500)
+    title: str = Field(min_length=1, max_length=200)
+    description: str = Field(default="", max_length=1000)
+    category: str = Field(default="Other", max_length=80)
+    location: str = Field(min_length=1, max_length=200)
+    image_url: str | None = Field(default=None, max_length=1000)
+    event_date: datetime
+
+    @field_validator("source_url")
+    @classmethod
+    def validate_source_url(cls, value: str) -> str:
+        cleaned_value = value.strip()
+        parsed_url = urlparse(cleaned_value)
+        if parsed_url.scheme not in {"http", "https"} or not parsed_url.netloc:
+            raise ValueError("Source URL must be a valid http or https URL")
+        return cleaned_value
+
+    @field_validator("source_logo_url", "image_url")
+    @classmethod
+    def validate_external_image_url(cls, value: str | None) -> str | None:
+        return validate_image_url(value)
+
+
+class ExternalProviderStatus(BaseModel):
+    source: Literal["skiddle", "ticketmaster", "gemini"]
+    source_name: str
+    enabled: bool
+    returned: int = Field(ge=0)
+    error: str | None = None
+
+
+class ExternalDiscoveryResponse(BaseModel):
+    events: list[ExternalEventResponse]
+    providers: list[ExternalProviderStatus]
+    terms: list[str]
+    search_suggestions_html: str | None = Field(default=None, max_length=100_000)
 
 
 class CommentCreate(BaseModel):

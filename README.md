@@ -38,6 +38,7 @@ backend/
     models.py            SQLAlchemy data models
     schemas.py           Validated request and response models
     seed_demo.py          Repeatable realistic development-data generator
+    services/             Skiddle, Ticketmaster, and Gemini integrations
   tests/
     api/                 HTTP contract and validation tests
     database/            Model, constraint, index, and migration tests
@@ -90,6 +91,26 @@ FRONTEND_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 `backend/eventsmister.db`. `UPLOAD_DIRECTORY` is also optional and defaults to
 `backend/uploads`.
 
+External discovery is optional. Add one or more provider keys to `backend/.env`
+to enable its authenticated **Search wider** action:
+
+```text
+SKIDDLE_API_KEY=
+TICKETMASTER_API_KEY=
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
+EXTERNAL_EVENTS_CACHE_SECONDS=900
+EXTERNAL_EVENTS_TIMEOUT_SECONDS=8
+```
+
+- Apply for a non-commercial [Skiddle API key](https://www.skiddle.com/api/).
+- Create a [Ticketmaster developer key](https://developer.ticketmaster.com/products-and-docs/apis/getting-started/).
+- Create a [Gemini API key](https://ai.google.dev/gemini-api/docs/api-key).
+
+Provider credentials stay in FastAPI and must never be added to a `VITE_`
+environment variable. The application remains fully usable when every external
+key is blank.
+
 Install the frontend dependencies:
 
 ```bash
@@ -141,6 +162,26 @@ development users and their content. The seeded event and profile images use
 remote placeholder services, so viewing those images requires an internet
 connection.
 
+## External Event Discovery
+
+Signed-in users can submit the discovery search to check connected event
+sources. FastAPI searches Skiddle and Ticketmaster concurrently and can ask
+Gemini to perform a grounded Google Search. The Gemini request contains only the
+submitted search phrase and the user's public profile interests; email, date of
+birth, JWTs, and other account data are never sent to providers.
+
+External responses are validated, converted to a shared event shape,
+deduplicated, and sorted by date. Searches without Gemini are cached for 15
+minutes by default. Grounded Google Search results are returned with Google's
+required search-suggestion markup and are not cached. A timeout or rate limit
+from one provider does not prevent results from the others. Skiddle results
+retain its required branding and every external card links to its source.
+
+External events are not copied into the local posts table and cannot receive
+EventsMister likes or comments. This keeps provider data and local community
+content separate while ensuring the source remains authoritative for dates,
+availability, and tickets.
+
 ## Application Routes
 
 | Route | Purpose |
@@ -164,6 +205,7 @@ connection.
   `DELETE /comments/{comment_id}`
 - `POST` and `DELETE` like routes for posts and comments
 - `POST /uploads/images`, `GET /uploads/{filename}`
+- `GET /discover/external` for authenticated, cached external event discovery
 - `GET /users/search`, `GET /users/{user_id}`,
   `GET /users/{user_id}/posts`
 
@@ -246,6 +288,9 @@ profile editing, profile and event photo uploads, hashtags, recommendations,
 authenticated user search, hearted-event retrieval, likes, comments, ownership
 controls, logout navigation, protected deep-link restoration, backend validation
 errors, and cleanup.
+
+Provider network calls are mocked in automated tests, so CI never needs or
+spends external API credentials.
 
 ## Continuous Integration
 

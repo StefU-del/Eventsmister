@@ -148,6 +148,18 @@ test('two users can complete the event social workflow', async ({ browser, page 
   await expect(
     recommendations.getByRole('heading', { name: 'A real browser test event' }),
   ).toBeVisible()
+  await page.getByRole('searchbox', { name: 'Search events' }).fill('community')
+  const externalDiscoveryResponse = page.waitForResponse(
+    (response) =>
+      response.url().includes('/discover/external?query=community') &&
+      response.request().method() === 'GET',
+  )
+  await page.getByRole('button', { name: 'Search wider' }).click()
+  expect((await externalDiscoveryResponse).status()).toBe(200)
+  await expect(
+    page.getByRole('heading', { name: 'External sources are not connected' }),
+  ).toBeVisible()
+  await page.getByRole('searchbox', { name: 'Search events' }).clear()
   await page.goto(eventUrl)
 
   const guestContext = await browser.newContext()

@@ -185,4 +185,59 @@ describe('Eventsmister UI', () => {
     cy.wait('@createPost').its('request.body.image_url').should('equal', uploadedUrl)
     cy.location('pathname').should('equal', '/events/30')
   })
+
+  it('searches wider London through the authenticated backend', () => {
+    restoreSession()
+    interceptFeed()
+    cy.intercept('GET', `${apiUrl}/discover/external?query=jazz`, (request) => {
+      expect(request.headers.authorization).to.equal('Bearer cypress-token')
+      request.reply({
+        statusCode: 200,
+        body: {
+          events: [
+            {
+              external_id: 'ticketmaster-91',
+              source: 'ticketmaster',
+              source_name: 'Ticketmaster',
+              source_url: 'https://ticketmaster.example/events/91',
+              source_logo_url: null,
+              title: 'London jazz weekender',
+              description: 'A full weekend of live jazz performances.',
+              category: 'Music',
+              location: 'South Bank, London',
+              image_url: 'https://images.example/jazz-weekender.jpg',
+              event_date: '2030-06-01T19:30:00Z',
+            },
+          ],
+          providers: [
+            {
+              source: 'ticketmaster',
+              source_name: 'Ticketmaster',
+              enabled: true,
+              returned: 1,
+              error: null,
+            },
+          ],
+          terms: ['jazz', 'music'],
+          search_suggestions_html: null,
+        },
+      })
+    }).as('externalEvents')
+
+    cy.visit('/', {
+      onBeforeLoad(window) {
+        window.localStorage.setItem('eventsmister_access_token', 'cypress-token')
+      },
+    })
+    cy.wait(['@currentUser', '@likes', '@posts'])
+    cy.findByRole('searchbox', { name: 'Search events' }).type('jazz')
+    cy.findByRole('button', { name: 'Search wider' }).click()
+
+    cy.wait('@externalEvents')
+    cy.findByRole('heading', { name: 'Events from around the web' }).should('be.visible')
+    cy.findByRole('heading', { name: 'London jazz weekender' }).should('be.visible')
+    cy.findByRole('link', { name: 'View on Ticketmaster' })
+      .should('have.attr', 'href', 'https://ticketmaster.example/events/91')
+      .and('have.attr', 'target', '_blank')
+  })
 })

@@ -34,6 +34,9 @@ export default defineConfig({
         DATABASE_URL: databaseUrl,
         FRONTEND_ORIGINS: frontendUrl,
         UPLOAD_DIRECTORY: uploadDirectory,
+        SKIDDLE_API_KEY: '',
+        TICKETMASTER_API_KEY: '',
+        GEMINI_API_KEY: '',
       },
     },
     {
