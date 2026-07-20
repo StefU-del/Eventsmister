@@ -23,7 +23,6 @@ def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ):
-    # OAuth2PasswordBearer extracts the token before this dependency validates its claims.
     unauthorized_creds = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid Token",

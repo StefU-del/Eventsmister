@@ -66,11 +66,6 @@ def migrate_legacy_schema(database_engine: Engine = engine) -> None:
                 column["name"] for column in inspector.get_columns("posts")
             }
 
-            if "desciption" in column_names and "description" not in column_names:
-                connection.execute(
-                    text("ALTER TABLE posts RENAME COLUMN desciption TO description")
-                )
-
             post_columns = {
                 "image_url": "VARCHAR(500)",
                 "hashtags": "JSON NOT NULL DEFAULT '[]'",

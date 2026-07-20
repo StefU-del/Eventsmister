@@ -84,7 +84,7 @@ class Like(Base):
             "(post_id IS NULL AND comment_id IS NOT NULL)",
             name="like_must_belong_to_post_or_comment_not_both",
         ),
-        # These constraints make duplicate likes impossible even under concurrent requests.
+        # Constraints to make duplicate likes impossible
         UniqueConstraint("owner_id", "post_id", name="uq_likes_owner_post"),
         UniqueConstraint("owner_id", "comment_id", name="uq_likes_owner_comment"),
     )

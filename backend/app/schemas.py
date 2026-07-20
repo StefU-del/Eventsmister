@@ -48,6 +48,7 @@ class UserCreate(BaseModel):
 
     @field_validator("password")
     @classmethod
+    # pydantic calls the field validators authomatically
     def validate_password_strength(cls, password: str) -> str:
         if len(password.encode("utf-8")) > 72:
             raise ValueError("Password must not exceed 72 bytes")

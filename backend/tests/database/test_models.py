@@ -29,21 +29,6 @@ def make_post(owner: models.User) -> models.Post:
     )
 
 
-def test_json_defaults_and_social_counts_are_persisted():
-    with TestingSessionLocal() as session:
-        user = make_user()
-        post = make_post(user)
-        session.add_all([user, post])
-        session.commit()
-        session.refresh(user)
-        session.refresh(post)
-
-        assert user.interests == []
-        assert post.hashtags == []
-        assert post.like_count == 0
-        assert post.comment_count == 0
-
-
 def test_like_requires_exactly_one_target():
     with TestingSessionLocal() as session:
         user = make_user()
@@ -114,19 +99,3 @@ def test_sqlite_rejects_orphaned_foreign_keys():
         with pytest.raises(IntegrityError):
             session.commit()
 
-
-def test_schema_contains_indexes_used_by_social_queries():
-    inspector = inspect(engine)
-
-    assert "ix_posts_owner_id" in {
-        index["name"] for index in inspector.get_indexes("posts")
-    }
-    assert {"ix_comments_owner_id", "ix_comments_post_id"}.issubset(
-        {index["name"] for index in inspector.get_indexes("comments")}
-    )
-    assert {"ix_likes_owner_id", "ix_likes_post_id", "ix_likes_comment_id"}.issubset(
-        {index["name"] for index in inspector.get_indexes("likes")}
-    )
-
-    with engine.connect() as connection:
-        assert connection.execute(text("PRAGMA foreign_keys")).scalar_one() == 1

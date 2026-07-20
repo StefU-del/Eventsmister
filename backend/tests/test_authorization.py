@@ -4,11 +4,25 @@ import pytest
 from jose import jwt
 
 from app import models
-from app.auth import ALGORITHM, SECRET_KEY, create_access_token
+from app.auth import (
+    ALGORITHM,
+    SECRET_KEY,
+    create_access_token,
+    hash_password,
+    verify_password,
+)
 from tests.database_setup import TestingSessionLocal, client
 
 pytestmark = [pytest.mark.api, pytest.mark.auth, pytest.mark.security]
 
+def test_password_hashing_and_verification():
+    password = "Password123!"
+
+    hashed_password = hash_password(password)
+
+    assert hashed_password != password
+    assert verify_password(password, hashed_password) is True
+    assert verify_password("WrongPassword123!", hashed_password) is False
 
 def test_access_token_has_an_expiry_without_mutating_the_input():
     claims = {"sub": "token_user"}
@@ -18,6 +32,7 @@ def test_access_token_has_an_expiry_without_mutating_the_input():
     assert claims == {"sub": "token_user"}
     assert decoded["sub"] == "token_user"
     assert decoded["exp"] > datetime.now(timezone.utc).timestamp()
+
 
 
 def test_expired_token_is_rejected_with_a_bearer_challenge(create_user):
